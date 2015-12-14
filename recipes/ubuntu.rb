@@ -3,17 +3,14 @@
    python-apt python-newt python-gudev python-dmidecode python-libxml2).each do |pkg|
   package pkg
 end
-
 # base packages
-%w(python-rhn-2.5.55-2.all.deb
-   python-ethtool-0.11-2.amd64.deb
-   rhn-client-tools-1.8.26-4.amd64.deb
-   apt-transport-spacewalk-1.0.6-2.all.deb
-   rhnsd-5.0.4-3.amd64.deb).each do |pkg|
-  dpkg_package pkg do
-    source "#{node['spacewalk']['pkg_source_path']}/#{pkg}"
-  end
+
+#spacewalk specific packages
+%w(python-rhn python-ethtool rhn-client-tools apt-transport-spacewalk
+   rhnsd).each do |pkg|
+  package pkg
 end
+
 
 # rhn config package
 if node['spacewalk']['enable_rhncfg']
