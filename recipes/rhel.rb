@@ -45,6 +45,15 @@ package 'osad' do
   only_if { node['spacewalk']['enable_osad'] }
 end
 
+ remote_file '/usr/share/rhn/RHN-ORG-TRUSTED-SSL-CERT' do
+    owner 'root'
+    group 'root'
+    mode '0644'
+    source "http://#{node['spacewalk']['reg']['server']}/pub/RHN-ORG-TRUSTED-SSL-CERT"
+    action :create
+  end
+
+
 # register client with spacewalk
 if node['spacewalk']['enable_osad']
   remote_file '/usr/share/rhn/RHN-ORG-TRUSTED-SSL-CERT' do
@@ -52,10 +61,11 @@ if node['spacewalk']['enable_osad']
     group 'root'
     mode '0644'
     source "#{node['spacewalk']['reg']['server']}/pub/RHN-ORG-TRUSTED-SSL-CERT"
+
   end
 
   execute 'register-with-spacewalk-server' do
-    command "rhnreg_ks --activationkey=#{node['spacewalk']['reg']['key']} --serverUrl=#{node['spacewalk']['reg']['server']}/XMLRPC"
+    command "rhnreg_ks --activationkey=#{node['spacewalk']['reg']['key']} --serverUrl=https://#{node['spacewalk']['reg']['server']}/XMLRPC"
     not_if { (File.exist?('/etc/sysconfig/rhn/systemid')) }
     notifies :restart, 'service[osad]'
   end
